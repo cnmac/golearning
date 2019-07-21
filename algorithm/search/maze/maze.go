@@ -5,6 +5,7 @@ import (
 	"os"
 )
 
+// Walk maze use BFS
 func main() {
 	maze := readMaze("algorithm/search/maze/maze.in")
 
