@@ -1,10 +1,10 @@
 package main
 
-import _ "github.com/go-sql-driver/mysql"
-import  "github.com/go-xorm/xorm"
-
-
-
+import (
+	_ "github.com/go-sql-driver/mysql"
+	"log"
+)
+import "github.com/go-xorm/xorm"
 
 type Account struct {
 	Id      int64
@@ -14,6 +14,8 @@ type Account struct {
 }
 
 func main() {
-	x,err:=.NewEngine("mysql", "root:111111@/sys?charset=utf8")
+	x, err := xorm.NewEngine("mysql", "root:111111@/sys?charset=utf8")
+	if err = x.Sync2(new(Account)); err != nil {
+		log.Fatalf("Fail to sync database: %v\n", err)
+	}
 }
-
