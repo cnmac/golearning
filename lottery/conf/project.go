@@ -8,4 +8,4 @@ const SysTimeFormatShort = "2006-01-02"
 var SysTimeLocation, _ = time.LoadLocation("Asia/Shanghai")
 
 var SignSecret = []byte("wehr1p23435jlakej45")
-var CookieSecret = "hellommm"
+var CookieSecret = "j3fj4gy2wet"
