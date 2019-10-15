@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"fmt"
+	"github.com/cnmac/golearning/web/comm"
 	"github.com/cnmac/golearning/web/models"
 	services "github.com/cnmac/golearning/web/service"
 	"github.com/kataras/iris"
@@ -19,7 +21,7 @@ type IndexController struct {
 // http:localhost:8080/
 func (c *IndexController) Get() string {
 	c.Ctx.Header("Content-Type", "text/html")
-	return "welcome to Go Lottery <a href='/public/index.html'>begin web</a>"
+	return "welcome to Go Lottery <a href='/public/index.html'>begin lottery</a>"
 }
 
 func (c *IndexController) GetGifts() map[string]interface{} {
@@ -44,4 +46,21 @@ func (c IndexController) GetNewPrize() map[string]interface{} {
 	// TODO:
 
 	return rs
+}
+
+func (c IndexController) GetLogin() {
+	uid := comm.Random(100000)
+	loginuser := models.ObjLoginuser{
+		Uid:      uid,
+		Username: fmt.Sprintf("admin-%d", uid),
+		Now:      comm.NowUnix(),
+		Ip:       comm.ClientIP(c.Ctx.Request()),
+	}
+	comm.SetLoginuser(c.Ctx.ResponseWriter(), &loginuser)
+	comm.Redirect(c.Ctx.ResponseWriter(), "/public/index.html?from=login")
+}
+
+func (c IndexController) GetLogout() {
+	comm.SetLoginuser(c.Ctx.ResponseWriter(), nil)
+	comm.Redirect(c.Ctx.ResponseWriter(), "/public/index.html?from=logout")
 }
