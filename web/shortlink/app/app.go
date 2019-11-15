@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"github.com/cnmac/golearning/web/shortlink/merror"
 	"github.com/cnmac/golearning/web/shortlink/middleware"
+	validator "github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
 	"github.com/justinas/alice"
-	"github.com/smartwalle/validator"
 	"log"
 	"net/http"
 )
+
+var validate *validator.Validate
 
 type App struct {
 	Router      *mux.Router
@@ -18,7 +20,7 @@ type App struct {
 }
 
 type shortenReq struct {
-	URL                 string `json:"url" validate:"nonzero"`
+	URL                 string `json:"url" validate:"required"`
 	ExpirationInMinutes int64  `json:"expiration_in_minutes" validate:"min=0"`
 }
 
@@ -27,6 +29,7 @@ type shortlinkResp struct {
 }
 
 func (a *App) Initialize() {
+	validate = validator.New()
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	a.Router = mux.NewRouter()
 	a.middlewares = &middleware.Middleware{}
@@ -52,7 +55,7 @@ func (a App) createShortlink(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	if err := validator.Validate(req); err != nil {
+	if err := validate.Struct(req); err != nil {
 		respondWithError(w, merror.StatusError{
 			Code: http.StatusBadRequest,
 			Err:  fmt.Errorf("validate parameters faild %v", req),
